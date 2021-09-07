@@ -12,6 +12,9 @@
    
 /*Includes ----------------------------------------------*/
 #include <stdio.h>
+#include <string.h>
+#include "xdisk.h"
+#include "xfat.h"
    
 /**\defgroup fatfs_test_Private_TypesDefinitions
  * \{
@@ -40,7 +43,13 @@
 /**\defgroup fatfs_test_Private_Variables
  * \{
  */
- static int array[32];
+ extern xdisk_driver_t vdisk_driver;
+ //磁盘路径
+ const char* disk_path_test = "disk_test.img";
+ //写缓存区160Kb
+ static u32_t write_buffer[160 * 1024];
+ //读缓存区160Kb
+ static u32_t read_buffer[160 * 1024];
    
 /**
  * \}
@@ -49,7 +58,69 @@
 /**\defgroup fatfs_test_Private_FunctionPrototypes
  * \{
  */
- void print_int(int v);
+
+ /**
+ * \func         disk_io_test
+ * 
+ * \brief		 Read disk and write disk test function
+ * 
+ * \param		 void
+ * 
+ * \retval		 error: -1
+ *				 no error: 0
+ * \note
+ */
+ int disk_io_test(void)
+ {
+	 int err;
+	 xdisk_t disk_test;
+
+	 disk_test.driver = &vdisk_driver;
+	 memset(read_buffer, 0, sizeof(read_buffer));
+
+	 //打开磁盘
+	 err = disk_test.driver->open(&disk_test, (void*)disk_path_test);
+	 if (err)
+	 {
+		 printf("open disk failed!\n");
+		 return -1;
+	 }
+
+	 //将write_buffer从磁盘第0个扇区开始写入两个扇区
+	 err = disk_test.driver->write_sector(&disk_test, (u8_t*)write_buffer, 0, 2);
+	 if (err)
+	 {
+		 printf("disk write failed!\n");
+		 return -1;
+	 }
+
+	 //将磁盘中第0个扇区开始的两个扇区内容读取写入read_buffer
+	 err = disk_test.driver->read_sector(&disk_test, (u8_t*)read_buffer, 0, 2);
+	 if (err)
+	 {
+		 printf("disk read failed!\n");
+		 return -1;
+	 }
+
+	 //对比read_buffer与write_buffer是否一致
+	 err = memcmp((u8_t*)read_buffer, (u8_t*)write_buffer, disk_test.sector_size * 2);
+	 if (err != 0)
+	 {
+		 printf("data not equal!\n");
+		 return -1;
+	 }
+
+	 //关闭磁盘
+	 err = disk_test.driver->close(&disk_test);
+	 if (err)
+	 {
+		 printf("disk close failed!\n\n");
+		 return -1;
+	 }
+
+	 printf("disk io test ok!\n");
+	 return 0;
+ }
    
 /**
  * \}
@@ -61,24 +132,24 @@
 
 int main()
 {
-	int* p_array = array;
+	xfat_err_t err;
 
-	for (int i = 0; i < 100; i++)
+	//给写入的buffer赋值
+	for (int i = 0; i < sizeof(write_buffer) / sizeof(u32_t); i++)
 	{
-		print_int(i);
+		write_buffer[i] = i;
 	}
 
-	p_array[0] = 32;
+	err = disk_io_test();
+	if (err)
+	{
+		return err;
+	}
 
 	printf("Test End\n");
-
 	return 0;
 }
 
-void print_int(int v)
-{
-	printf("v = %d\n", v);
-}
    
 /**
  * \}

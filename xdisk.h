@@ -35,6 +35,7 @@ typedef struct _xdisk_t
 	u32_t sector_size;		//每个磁盘块/扇区大小
 	u32_t total_sector;		//总共有多少块/扇区
 	xdisk_driver_t* driver;	//磁盘操作接口
+	void* data;
 }xdisk_t;
    
 /**
