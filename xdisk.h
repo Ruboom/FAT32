@@ -32,6 +32,7 @@ typedef struct _xdisk_driver_t
 //用于描述磁盘结构
 typedef struct _xdisk_t
 {
+	const char* name;		//磁盘名称
 	u32_t sector_size;		//每个磁盘块/扇区大小
 	u32_t total_sector;		//总共有多少块/扇区
 	xdisk_driver_t* driver;	//磁盘操作接口
@@ -46,6 +47,8 @@ typedef struct _xdisk_t
  * \{
  */
    
+#define XDISK_CLASS(x) xdisk_ ## x
+
 /**
  * \}
  */
@@ -69,6 +72,11 @@ typedef struct _xdisk_t
 /**\defgroup xdisk_Exported_Functions
  * \{
  */
+
+xfat_err_t XDISK_CLASS(open)(xdisk_t* disk, const char* name, xdisk_driver_t* driver, void* init_data);
+xfat_err_t XDISK_CLASS(close)(xdisk_t* disk);
+xfat_err_t XDISK_CLASS(read_sector)(xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
+xfat_err_t XDISK_CLASS(write_sector)(xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
    
 /**
  * \}

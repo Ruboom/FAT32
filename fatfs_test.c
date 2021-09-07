@@ -75,11 +75,10 @@
 	 int err;
 	 xdisk_t disk_test;
 
-	 disk_test.driver = &vdisk_driver;
 	 memset(read_buffer, 0, sizeof(read_buffer));
 
 	 //打开磁盘
-	 err = disk_test.driver->open(&disk_test, (void*)disk_path_test);
+	 err = xdisk_open(&disk_test, "vdisk_test", &vdisk_driver, (void*)disk_path_test);
 	 if (err)
 	 {
 		 printf("open disk failed!\n");
@@ -87,7 +86,7 @@
 	 }
 
 	 //将write_buffer从磁盘第0个扇区开始写入两个扇区
-	 err = disk_test.driver->write_sector(&disk_test, (u8_t*)write_buffer, 0, 2);
+	 err = xdisk_write_sector(&disk_test, (u8_t*)write_buffer, 0, 2);
 	 if (err)
 	 {
 		 printf("disk write failed!\n");
@@ -95,7 +94,7 @@
 	 }
 
 	 //将磁盘中第0个扇区开始的两个扇区内容读取写入read_buffer
-	 err = disk_test.driver->read_sector(&disk_test, (u8_t*)read_buffer, 0, 2);
+	 err = xdisk_read_sector(&disk_test, (u8_t*)read_buffer, 0, 2);
 	 if (err)
 	 {
 		 printf("disk read failed!\n");
@@ -111,7 +110,7 @@
 	 }
 
 	 //关闭磁盘
-	 err = disk_test.driver->close(&disk_test);
+	 err = xdisk_close(&disk_test);
 	 if (err)
 	 {
 		 printf("disk close failed!\n\n");

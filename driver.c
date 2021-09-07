@@ -25,8 +25,6 @@
 /**\defgroup driver_Private_Defines
  * \{
  */
-
-#define XDISK_CLASS(x) xdisk_hw_ ## x
    
 /**
  * \}
@@ -43,10 +41,10 @@
 /**\defgroup driver_Private_FunctionPrototypes
 * \{
 */
-static xfat_err_t XDISK_CLASS(open)(struct _xdisk_t* disk, void* init_data);
-static xfat_err_t XDISK_CLASS(close)(struct _xdisk_t* disk);
-static xfat_err_t XDISK_CLASS(read_sector)(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
-static xfat_err_t XDISK_CLASS(write_sector)(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
+static xfat_err_t xdisk_hw_open(struct _xdisk_t* disk, void* init_data);
+static xfat_err_t xdisk_hw_close(struct _xdisk_t* disk);
+static xfat_err_t xdisk_hw_read_sector(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
+static xfat_err_t xdisk_hw_write_sector(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count);
 /**
 * \}
 */
@@ -77,14 +75,14 @@ xdisk_driver_t vdisk_driver = {
  * 
  * \brief        Open disk
  * 
- * \param        *disk: disk structure pointer
- *				 void* init_data: disk path
+ * \param        struct _xdisk_t *disk: Disk structure pointer
+ *				 void* init_data: Disk path
  * 
  * \retval       FS_ERR_OK = 0;
  *				 FS_ERR_IO = -1
  * \note         
  */
-static xfat_err_t XDISK_CLASS(open)(struct _xdisk_t* disk, void* init_data)
+static xfat_err_t xdisk_hw_open(struct _xdisk_t* disk, void* init_data)
 {
 	const char* path = (const char*)init_data;
 
@@ -117,7 +115,7 @@ static xfat_err_t XDISK_CLASS(open)(struct _xdisk_t* disk, void* init_data)
  * \retval		 FS_ERR_OK = 0;
  * \note
  */
-static xfat_err_t XDISK_CLASS(close)(struct _xdisk_t* disk)
+static xfat_err_t xdisk_hw_close(struct _xdisk_t* disk)
 {
 	FILE* file = (FILE*)disk->data;
 	fclose(file);
@@ -139,7 +137,7 @@ static xfat_err_t XDISK_CLASS(close)(struct _xdisk_t* disk)
  *				 FS_ERR_OK = 0
  * \note
  */
-static xfat_err_t XDISK_CLASS(read_sector)(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count)
+static xfat_err_t xdisk_hw_read_sector(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count)
 {
 	//获得偏移量
 	u32_t offset = start_sector * disk->sector_size;
@@ -178,7 +176,7 @@ static xfat_err_t XDISK_CLASS(read_sector)(struct _xdisk_t* disk, u8_t* buffer, 
  *				 FS_ERR_OK = 0
  * \note
  */
-static xfat_err_t XDISK_CLASS(write_sector)(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count)
+static xfat_err_t xdisk_hw_write_sector(struct _xdisk_t* disk, u8_t* buffer, u32_t start_sector, u32_t count)
 {
 	//获得偏移量
 	u32_t offset = start_sector * disk->sector_size;
