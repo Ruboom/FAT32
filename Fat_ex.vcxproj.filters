@@ -18,5 +18,25 @@
     <ClCompile Include="fatfs_test.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="xdisk.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="xfat.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="driver.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xtypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xdisk.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xfat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

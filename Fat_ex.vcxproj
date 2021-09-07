@@ -19,7 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="driver.c" />
     <ClCompile Include="fatfs_test.c" />
+    <ClCompile Include="xdisk.c" />
+    <ClCompile Include="xfat.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xdisk.h" />
+    <ClInclude Include="xfat.h" />
+    <ClInclude Include="xtypes.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
