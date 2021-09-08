@@ -46,10 +46,13 @@
  extern xdisk_driver_t vdisk_driver;
  //´ÅÅÌÂ·¾¶
  const char* disk_path_test = "disk_test.img";
+ const char* disk_path = "disk.img";
  //Ğ´»º´æÇø160Kb
  static u32_t write_buffer[160 * 1024];
  //¶Á»º´æÇø160Kb
  static u32_t read_buffer[160 * 1024];
+
+ xdisk_t disk;
    
 /**
  * \}
@@ -120,6 +123,36 @@
 	 printf("disk io test ok!\n");
 	 return 0;
  }
+
+
+/**
+ * \func         disk_part_test
+ * 
+ * \brief        Disk partition test
+ * 
+ * \param        void
+ * 
+ * \retval       err
+ * 
+ * \note         
+ */
+ int disk_part_test(void)
+ {
+	 u32_t count;
+	 xfat_err_t err = FS_ERR_OK;
+
+	 printf("partition read test.....\n");
+	 err = xdisk_get_part_count(&disk, &count);
+	 if (err < 0)
+	 {
+		 printf("partition count detect failed!\n");
+		 return err;
+	 }
+
+	 printf("partition count:%d\n", count);
+	 return 0;
+
+ }
    
 /**
  * \}
@@ -143,6 +176,26 @@ int main()
 	if (err)
 	{
 		return err;
+	}
+
+	err = xdisk_open(&disk, "vdisk", &vdisk_driver, (void*)disk_path);
+	if (err)
+	{
+		printf("open disk failed!\n");
+		return -1;
+	}
+
+	err = disk_part_test();
+	if (err)
+	{
+		return err;
+	}
+
+	err = xdisk_close(&disk);
+	if (err)
+	{
+		printf("disk close failed!\n");
+		return -1;
 	}
 
 	printf("Test End\n");

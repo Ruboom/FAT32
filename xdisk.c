@@ -39,6 +39,8 @@
 /**\defgroup xdisk_Private_Variables
  * \{
  */
+
+u8_t temp_buff[512];
    
 /**
  * \}
@@ -177,6 +179,52 @@ xfat_err_t xdisk_write_sector (xdisk_t* disk, u8_t* buffer, u32_t start_sector, 
 	err = disk->driver->write_sector(disk, buffer, start_sector, count);
 
 	return err;
+}
+
+
+/**
+ * \func         xdisk_get_part_count
+ * 
+ * \brief        Get the number of disk partition
+ * 
+ * \param        xdisk_t* disk: Disk structure pointer
+ *				 u32_t* count: The number of disk partition
+ * 
+ * \retval      err 
+ * 
+ * \note         
+ */
+xfat_err_t xdisk_get_part_count (xdisk_t* disk, u32_t* count)
+{
+	int r_count = 0;
+	u8_t* disk_buffer = temp_buff;
+	mbr_part_t* part;
+
+	//打开磁盘
+	int err = xdisk_read_sector(disk, disk_buffer, 0, 1);
+	if (err < 0)
+	{
+		return err;
+	}
+
+	//获取磁盘分区表字段
+	part = ((mbr_t*)disk_buffer)->part_info;
+
+	//判断磁盘分区类型
+	for (size_t i = 0; i < MBR_PRIMAR_PART_NR; i++, part++)
+	{
+		if (part->system_id == FS_NOT_VALID)
+		{
+			continue;
+		}
+		else
+		{
+			r_count++;
+		}
+	}
+	*count = r_count;
+
+	return FS_ERR_OK;
 }
    
 /**
